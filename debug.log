@@ -1,0 +1,16 @@
+[13892:17144:0302/235628.147:ERROR:biz_prom_shiply_util.cpp(219)] BIZ Failed to open file: C:\ProgramData\SogouInput\ShiplyUpdate\ime_perf_1\meta.dat
+[13892:17144:0302/235628.148:WARNING:t_skinfilemap.cpp(56)] SGRenderLog:CheckUpdate newMem.OpenMem failed, szNewMem:Local\sgime_skin.v23.filemap.sogouime err:系统错误2: 系统找不到指定的文件。  
+打开Filemap失败: Local\sgime_skin.v23.filemap.sogouime1506defaf37
+[13892:17144:0302/235628.148:WARNING:t_skinfilemap.cpp(65)] SGRenderLog:CheckUpdate finish: old version:1
+[13892:17144:0302/235628.148:WARNING:t_skinfilemap.cpp(67)] SGRenderLog:CheckUpdate finish: new version:23
+[13892:17144:0302/235628.226:WARNING:t_skinfilemap.cpp(63)] SGRenderLog:CheckUpdate newMem.OpenMem Suc, szNewMem:Local\sgime_skin.Dpi119.v23.filemap.sogouime
+[13892:17144:0302/235628.226:WARNING:t_skinfilemap.cpp(65)] SGRenderLog:CheckUpdate finish: old version:23
+[13892:17144:0302/235628.226:WARNING:t_skinfilemap.cpp(67)] SGRenderLog:CheckUpdate finish: new version:23
+[20940:17436:0302/235821.429:ERROR:biz_prom_shiply_util.cpp(219)] BIZ Failed to open file: C:\ProgramData\SogouInput\ShiplyUpdate\ime_perf_1\meta.dat
+[20940:17436:0302/235821.431:WARNING:t_skinfilemap.cpp(56)] SGRenderLog:CheckUpdate newMem.OpenMem failed, szNewMem:Local\sgime_skin.v23.filemap.sogouime err:系统错误2: 系统找不到指定的文件。  
+打开Filemap失败: Local\sgime_skin.v23.filemap.sogouime1506defaf37
+[20940:17436:0302/235821.431:WARNING:t_skinfilemap.cpp(65)] SGRenderLog:CheckUpdate finish: old version:1
+[20940:17436:0302/235821.431:WARNING:t_skinfilemap.cpp(67)] SGRenderLog:CheckUpdate finish: new version:23
+[20940:17436:0302/235821.631:WARNING:t_skinfilemap.cpp(63)] SGRenderLog:CheckUpdate newMem.OpenMem Suc, szNewMem:Local\sgime_skin.Dpi119.v23.filemap.sogouime
+[20940:17436:0302/235821.631:WARNING:t_skinfilemap.cpp(65)] SGRenderLog:CheckUpdate finish: old version:23
+[20940:17436:0302/235821.631:WARNING:t_skinfilemap.cpp(67)] SGRenderLog:CheckUpdate finish: new version:23
