@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-markdown-preview/markdown.css";
 import { StoredShare } from "@/lib/types";
@@ -16,7 +16,7 @@ export function ShareViewer({ id }: ShareViewerProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const loadShare = useCallback(async () => {
-    if (!id) {
+    if (!id || id === "undefined" || id === "null") {
       setErrorMessage("分享链接无效，请重新生成");
       setStatus("error");
       return;
@@ -38,6 +38,15 @@ export function ShareViewer({ id }: ShareViewerProps) {
     setShare(payload.data);
     setStatus("idle");
   }, [id, password]);
+
+  useEffect(() => {
+    if (!id || id === "undefined" || id === "null") {
+      setErrorMessage("分享链接无效，请重新生成");
+      setStatus("error");
+      return;
+    }
+    void loadShare();
+  }, [id, loadShare]);
 
   const renderBody = useMemo(() => {
     if (!share) return null;
