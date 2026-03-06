@@ -27,7 +27,15 @@ export function ShareWorkspace() {
       return;
     }
 
-    const payload = await response.json();
+    const payload = await response
+      .json()
+      .catch(() => ({ error: "创建成功但返回内容为空" }));
+    if (!payload?.data?.url) {
+      setError(payload?.error || "创建成功但未返回分享链接，请稍后重试");
+      setIsSubmitting(false);
+      return;
+    }
+
     setResult(payload.data);
     setIsSubmitting(false);
     router.push(payload.data.url);
