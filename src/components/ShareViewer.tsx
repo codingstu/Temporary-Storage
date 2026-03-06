@@ -16,6 +16,11 @@ export function ShareViewer({ id }: ShareViewerProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const loadShare = useCallback(async () => {
+    if (!id) {
+      setErrorMessage("分享链接无效，请重新生成");
+      setStatus("error");
+      return;
+    }
     setStatus("loading");
     setErrorMessage(null);
     const response = await fetch(`/api/share/${id}`, {
