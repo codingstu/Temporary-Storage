@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useParams, usePathname } from "next/navigation";
 import MDEditor from "@uiw/react-md-editor";
 import "@uiw/react-markdown-preview/markdown.css";
 import { StoredShare } from "@/lib/types";
@@ -14,16 +15,41 @@ export function ShareViewer({ id }: ShareViewerProps) {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const params = useParams<{ id?: string | string[] }>();
+  const pathname = usePathname();
+
+  const resolvedId = useMemo(() => {
+    const valid = (value?: string) =>
+      Boolean(value && value !== "undefined" && value !== "null");
+
+    if (valid(id)) {
+      return id;
+    }
+
+    const paramId = Array.isArray(params?.id) ? params?.id?.[0] : params?.id;
+    if (valid(paramId)) {
+      return paramId;
+    }
+
+    if (pathname) {
+      const match = pathname.split("/s/")[1];
+      if (valid(match)) {
+        return match;
+      }
+    }
+
+    return "";
+  }, [id, params?.id, pathname]);
 
   const loadShare = useCallback(async () => {
-    if (!id || id === "undefined" || id === "null") {
+    if (!resolvedId) {
       setErrorMessage("分享链接无效，请重新生成");
       setStatus("error");
       return;
     }
     setStatus("loading");
     setErrorMessage(null);
-    const response = await fetch(`/api/share/${id}`, {
+    const response = await fetch(`/api/share/${resolvedId}`, {
       headers: password ? { "x-share-password": password } : {},
     });
 
@@ -40,13 +66,13 @@ export function ShareViewer({ id }: ShareViewerProps) {
   }, [id, password]);
 
   useEffect(() => {
-    if (!id || id === "undefined" || id === "null") {
+    if (!resolvedId) {
       setErrorMessage("分享链接无效，请重新生成");
       setStatus("error");
       return;
     }
     void loadShare();
-  }, [id, loadShare]);
+  }, [resolvedId, loadShare]);
 
   const renderBody = useMemo(() => {
     if (!share) return null;
