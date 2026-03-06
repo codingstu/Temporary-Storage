@@ -20,13 +20,17 @@ npm run dev
 
 ## 环境变量
 
-复制并配置 `.env.example`：
+本地开发可复制 `.env.example` 为 `.env.local`。线上部署请在 Vercel 环境变量中配置（Vercel KV 实际上就是 Upstash Redis 的 REST 变量）。
 
 ```bash
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
+# Vercel KV / Upstash Redis（二选一，通常 Vercel 会提供 Upstash Redis 变量）
 KV_REST_API_URL=
 KV_REST_API_TOKEN=
 KV_REST_API_READ_ONLY_TOKEN=
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+UPSTASH_REDIS_REST_READ_ONLY_TOKEN=
 ```
 
 ## 主要命令

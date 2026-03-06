@@ -2,14 +2,15 @@ import { ShareWorkspace } from "@/components/ShareWorkspace";
 import { TimelineFeed } from "@/components/TimelineFeed";
 import { getTimelineShares } from "@/lib/storage";
 import { toTimelineItem } from "@/lib/timeline";
+import { kvReadConfigured } from "@/lib/kv";
 
 export default async function Home() {
-  const hasKv = Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  const hasKv = kvReadConfigured;
   const shares = hasKv ? await getTimelineShares(12) : [];
   const items = shares.map(toTimelineItem);
   const timelineError = hasKv
     ? null
-    : "缺少 KV_REST_API_URL 或 KV_REST_API_TOKEN，请先配置 Vercel KV";
+    : "缺少 KV 环境变量，请在 Vercel 中配置 KV_REST_API_URL 与 KV_REST_API_TOKEN（或 Upstash Redis 变量）";
 
   return (
     <div className="min-h-screen bg-zinc-50 px-6 py-16 text-zinc-900">

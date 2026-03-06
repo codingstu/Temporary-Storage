@@ -1,7 +1,7 @@
 import crypto from "crypto";
-import { kv } from "@vercel/kv";
 import { ShareInput, StoredShare } from "./types";
 import { hashPassword } from "./security";
+import { getKvReadClient, getKvWriteClient } from "./kv";
 
 const shareKey = (id: string) => `share:${id}`;
 const readKey = (id: string) => `reads:${id}`;
@@ -33,20 +33,22 @@ export async function createShare(input: ShareInput): Promise<StoredShare> {
     stored.passwordSalt = salt;
   }
 
-  await kv.set(shareKey(id), JSON.stringify(stored), { ex: rest.ttl });
+  const kvWrite = getKvWriteClient();
+  await kvWrite.set(shareKey(id), JSON.stringify(stored), { ex: rest.ttl });
 
   if (rest.maxReads) {
-    await kv.set(readKey(id), rest.maxReads, { ex: rest.ttl });
+    await kvWrite.set(readKey(id), rest.maxReads, { ex: rest.ttl });
   }
 
-  await kv.lpush(timelineKey, id);
-  await kv.ltrim(timelineKey, 0, timelineMax - 1);
+  await kvWrite.lpush(timelineKey, id);
+  await kvWrite.ltrim(timelineKey, 0, timelineMax - 1);
 
   return stored;
 }
 
 export async function getShare(id: string): Promise<StoredShare | null> {
-  const data = await kv.get<string>(shareKey(id));
+  const kvRead = getKvReadClient();
+  const data = await kvRead.get<string>(shareKey(id));
   if (!data) {
     return null;
   }
@@ -58,8 +60,9 @@ export async function consumeShare(
   maxReads?: number,
   burnAfterRead?: boolean,
 ): Promise<{ remainingReads: number | null }> {
+  const kvWrite = getKvWriteClient();
   if (maxReads) {
-    const remaining = await kv.decr(readKey(id));
+    const remaining = await kvWrite.decr(readKey(id));
     if (remaining <= 0) {
       await deleteShare(id);
       return { remainingReads: 0 };
@@ -78,14 +81,16 @@ export async function consumeShare(
 }
 
 export async function deleteShare(id: string): Promise<void> {
-  await Promise.all([kv.del(shareKey(id)), kv.del(readKey(id))]);
+  const kvWrite = getKvWriteClient();
+  await Promise.all([kvWrite.del(shareKey(id)), kvWrite.del(readKey(id))]);
 }
 
 export async function getTimelineShares(limit: number): Promise<StoredShare[]> {
   if (limit <= 0) {
     return [];
   }
-  const ids = await kv.lrange<string>(timelineKey, 0, limit - 1);
+  const kvRead = getKvReadClient();
+  const ids = await kvRead.lrange<string>(timelineKey, 0, limit - 1);
   if (!ids.length) {
     return [];
   }

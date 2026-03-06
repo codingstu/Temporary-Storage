@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { consumeShare, deleteShare, getShare } from "@/lib/storage";
 import { verifyPassword } from "@/lib/security";
+import { kvWriteConfigured } from "@/lib/kv";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+  if (!kvWriteConfigured) {
     return NextResponse.json(
       {
         error:
-          "缺少 KV_REST_API_URL 或 KV_REST_API_TOKEN，请先在 .env.local 配置 Vercel KV",
+          "缺少 KV 环境变量，请在 Vercel 中配置 KV_REST_API_URL 与 KV_REST_API_TOKEN（或 Upstash Redis 变量）",
       },
       { status: 500 },
     );
@@ -39,11 +40,11 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+  if (!kvWriteConfigured) {
     return NextResponse.json(
       {
         error:
-          "缺少 KV_REST_API_URL 或 KV_REST_API_TOKEN，请先在 .env.local 配置 Vercel KV",
+          "缺少 KV 环境变量，请在 Vercel 中配置 KV_REST_API_URL 与 KV_REST_API_TOKEN（或 Upstash Redis 变量）",
       },
       { status: 500 },
     );

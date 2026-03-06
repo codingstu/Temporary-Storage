@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { createShare } from "@/lib/storage";
 import { validateShareInput } from "@/lib/validation";
 import { ShareInput } from "@/lib/types";
+import { kvWriteConfigured } from "@/lib/kv";
 
 export async function POST(request: NextRequest) {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+  if (!kvWriteConfigured) {
     return NextResponse.json(
       {
         error:
-          "缺少 KV_REST_API_URL 或 KV_REST_API_TOKEN，请先在 .env.local 配置 Vercel KV",
+          "缺少 KV 环境变量，请在 Vercel 中配置 KV_REST_API_URL 与 KV_REST_API_TOKEN（或 Upstash Redis 变量）",
       },
       { status: 500 },
     );
