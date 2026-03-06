@@ -48,11 +48,14 @@ export async function createShare(input: ShareInput): Promise<StoredShare> {
 
 export async function getShare(id: string): Promise<StoredShare | null> {
   const kvRead = getKvReadClient();
-  const data = await kvRead.get<string>(shareKey(id));
+  const data = await kvRead.get<string | StoredShare>(shareKey(id));
   if (!data) {
     return null;
   }
-  return JSON.parse(data) as StoredShare;
+  if (typeof data === "string") {
+    return JSON.parse(data) as StoredShare;
+  }
+  return data as StoredShare;
 }
 
 export async function consumeShare(
