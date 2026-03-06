@@ -15,6 +15,7 @@ export function ShareViewer({ id }: ShareViewerProps) {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [needsPassword, setNeedsPassword] = useState(false);
   const params = useParams<{ id?: string | string[] }>();
   const pathname = usePathname();
 
@@ -53,6 +54,19 @@ export function ShareViewer({ id }: ShareViewerProps) {
       headers: password ? { "x-share-password": password } : {},
     });
 
+    if (response.status === 401) {
+      const payload = await response.json().catch(() => ({ error: "需要密码" }));
+      if (!password) {
+        setNeedsPassword(true);
+        setErrorMessage(null);
+        setStatus("idle");
+        return;
+      }
+      setErrorMessage(payload.error || "需要密码或密码错误");
+      setStatus("error");
+      return;
+    }
+
     if (!response.ok) {
       const payload = await response.json().catch(() => ({ error: "加载失败" }));
       setErrorMessage(payload.error || "加载失败");
@@ -62,8 +76,9 @@ export function ShareViewer({ id }: ShareViewerProps) {
 
     const payload = await response.json();
     setShare(payload.data);
+    setNeedsPassword(false);
     setStatus("idle");
-  }, [id, password]);
+  }, [resolvedId, password]);
 
   useEffect(() => {
     if (!resolvedId) {
@@ -104,7 +119,13 @@ export function ShareViewer({ id }: ShareViewerProps) {
           <div>
             <div className="text-lg font-semibold text-zinc-900">查看分享内容</div>
             <div className="text-sm text-zinc-500">
-              {share ? "内容已加载" : "请输入密码后查看内容"}
+              {share
+                ? "内容已加载"
+                : needsPassword
+                  ? "请输入密码后查看内容"
+                  : status === "loading"
+                    ? "加载中..."
+                    : "准备加载"}
             </div>
           </div>
           <div className="flex w-full items-center gap-2 md:w-auto">
